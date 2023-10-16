@@ -121,4 +121,38 @@ class FranquiciaTest extends TestCase {
         $this->assertEquals($tarjeta->montoRestante, 3500-120);
     }
 
+
+
+    public function testTripsOutsideTimeSlot() {
+        $colectivo = new Colectivo('Linea 1');
+        $tarjeta = new MedioBoleto();
+        $fecha1 = new \DateTime('2023-01-01 07:00:00'); // Un día de semana dentro de la franja horaria
+        $fecha2 = new \DateTime('2023-01-01 23:00:00'); // Un día de semana fuera de la franja horaria
+        $fecha3 = new \DateTime('2023-01-02 07:00:00'); // No es un día de semana
+    
+        $tarjeta->cargarSaldo(600);
+    
+        // Realizar un viaje dentro de la franja horaria permitida
+        $colectivo->pagarCon($tarjeta, $fecha1);
+    
+        // Cambiar la fecha para estar fuera de la franja horaria (un día de semana)
+        $tarjeta->listaViajes = []; // Reiniciar la lista de viajes
+    
+        // Intentar pagar otro viaje fuera de la franja horaria (un día de semana) debe lanzar una excepción
+        $colectivo->pagarCon($tarjeta, $fecha2);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("No puedes usar esta franquicia fuera de la franja horaria especificada.");
+    
+        // Cambiar la fecha para que no sea un día de semana
+        $tarjeta->listaViajes = []; // Reiniciar la lista de viajes
+    
+        // Intentar pagar otro viaje en un día que no es de semana debe lanzar una excepción
+        $colectivo->pagarCon($tarjeta, $fecha3);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("No puedes usar esta franquicia fuera de la franja horaria especificada.");
+    }
+    
+    
+    
+
 }

@@ -17,20 +17,25 @@ class MedioBoleto extends Tarjeta {
             throw new \Exception("Debes esperar al menos 5 minutos antes de realizar otro viaje.");
         } else {
             $hoy = new \DateTime();
-
-            if (count($this->listaViajes) === 0 || $this->listaViajes[0]->format('Y-m-d') !== $hoy->format('Y-m-d') ) {
-                // Si es el primer viaje del día, reiniciar la lista de viajes
-                $this->listaViajes = [new \DateTime()];
-                $this->saldo -= $this->mitadTarifa;
-                $this->actualizarTiempoUltimoViaje();
-            } elseif (count($this->listaViajes) < 4){
-                $this->saldo -= $this->mitadTarifa;
-                $this->actualizarTiempoUltimoViaje();
-                $this->listaViajes[] = new \DateTime();
+            
+            // Verificar si el día actual es un día hábil (Lunes a Viernes) y está dentro de la franja horaria
+            if ($hoy->format('N') >= 1 && $hoy->format('N') <= 5 && $hoy->format('H') >= 6 && $hoy->format('H') < 22) {
+                if (count($this->listaViajes) === 0 || $this->listaViajes[0]->format('Y-m-d') !== $hoy->format('Y-m-d')) {
+                    // Si es el primer viaje del día, reiniciar la lista de viajes
+                    $this->listaViajes = [new \DateTime()];
+                    $this->saldo -= $this->mitadTarifa;
+                    $this->actualizarTiempoUltimoViaje();
+                } elseif (count($this->listaViajes) < 4) {
+                    $this->saldo -= $this->mitadTarifa;
+                    $this->actualizarTiempoUltimoViaje();
+                    $this->listaViajes[] = new \DateTime();
+                } else {
+                    $this->saldo -= self::TARIFA;
+                    $this->actualizarTiempoUltimoViaje();
+                    $this->listaViajes[] = new \DateTime();
+                }
             } else {
-                $this->saldo -= self::TARIFA;
-                $this->actualizarTiempoUltimoViaje();
-                $this->listaViajes[] = new \DateTime();
+                throw new \Exception("No puedes usar esta franquicia fuera de la franja horaria especificada.");
             }
         }
     }

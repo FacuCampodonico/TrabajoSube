@@ -8,7 +8,8 @@ class BoletoGratuito extends Tarjeta {
     public function pagarPasaje() {
         // Verificamos el tiempo transcurrido desde el último viaje
         $hoy = new \DateTime();
-
+         // Verificar si el día actual es un día hábil (Lunes a Viernes) y está dentro de la franja horaria
+         if ($hoy->format('N') >= 1 && $hoy->format('N') <= 5 && $hoy->format('H') >= 6 && $hoy->format('H') < 22) {
         if (count($this->listaViajes) === 0 || $this->listaViajes[0]->format('Y-m-d') !== $hoy->format('Y-m-d') ) {
             // Si es el primer viaje del día, reiniciar la lista de viajes
             $this->listaViajes = [new \DateTime()];
@@ -22,6 +23,7 @@ class BoletoGratuito extends Tarjeta {
             $this->listaViajes[] = new \DateTime();
         }
     }
+}
 
     public function realizarViajePlus() {
         $this->saldo -= self::TARIFA;
