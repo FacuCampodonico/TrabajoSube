@@ -14,26 +14,38 @@ class Colectivo {
     
     public function pagarCon($tarjeta, $fecha) {
 
-        $tarifa = $colectivo->tipoLinea === 'interurbana' ? 184 : 120; // se le asigna el valor a la tarifa dependiendo si es inter o no
-
-        if ($tarjeta->getSaldo() >= self::TARIFA) {
-            // Realizamos el viaje y actualizamos el tiempo del último viaje
-            $tarjeta->pagarPasaje(self::TARIFA);
-            $tarjeta->actualizarTiempoUltimoViaje();
-
-            return new Boleto($this, $tarjeta, $fecha, self::TARIFA, $tarjeta->getSaldo());
+        $tarifa = $this->tipoLinea === 'interurbana' ? 184 : 120;
+        
+        $viajesRealizados = $tarjeta->contarViajesDelMes();
+    
+        // Calcula el descuento basado en la cantidad de viajes
+        if ($viajesRealizados >= 1 && $viajesRealizados <= 29) {
+            $descuento = 0; // Sin descuento
+        } elseif ($viajesRealizados >= 30 && $viajesRealizados <= 79) {
+            $descuento = $tarifa * 0.20; // 20% de descuento
         } else {
-            if ($tarjeta->getSaldo() <= self::TARIFA) {
-                if (($tarjeta->getSaldo() - self::TARIFA) >= (-240)) {
-                    $tarjeta->realizarViajePlus();
-                    return new Boleto($this, $tarjeta, $fecha, self::TARIFA, $tarjeta->getSaldo());
-                } else {
-                    throw new \Exception("Saldo insuficiente para realizar un viaje plus.");
-                }
+            $descuento = $tarifa * 0.25; // 25% de descuento
+        }
+    
+        $tarifaConDescuento = $tarifa - $descuento;
+    
+        if ($tarjeta->getSaldo() >= $tarifaConDescuento) {
+            // Realiza el viaje con descuento
+            $tarjeta->pagarPasaje($tarifaConDescuento);
+            $tarjeta->actualizarTiempoUltimoViaje();
+    
+            return new Boleto($this, $tarjeta, $fecha, $tarifaConDescuento, $tarjeta->getSaldo());
+        } else {
+            // Realiza un viaje plus si no hay saldo suficiente
+            if ($tarjeta->getSaldo() >= $tarifa) {
+                $tarjeta->realizarViajePlus();
+                return new Boleto($this, $tarjeta, $fecha, $tarifa, $tarjeta->getSaldo());
+            } else {
+                throw new \Exception("Saldo insuficiente para realizar un viaje plus.");
             }
         }
     }
-
+    
 
     public function getLinea() {
         return $this->linea;

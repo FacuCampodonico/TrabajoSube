@@ -27,6 +27,29 @@ class Tarjeta {
         return false;
     }
 
+    public function contarViajesDelMes() {
+        $fechaActual = new \DateTime(); // Obtener la fecha actual
+    
+        $mesActual = $fechaActual->format('m'); // Obtener el número del mes actual
+        $anioActual = $fechaActual->format('Y'); // Obtener el año actual
+    
+        $viajesDelMes = 0;
+    
+        // Recorre los boletos registrados y verifica si pertenecen al mes actual
+        foreach ($this->boletos as $boleto) {
+            $fechaBoleto = $boleto->getFecha();
+            $mesBoleto = $fechaBoleto->format('m');
+            $anioBoleto = $fechaBoleto->format('Y');
+    
+            if ($mesBoleto === $mesActual && $anioBoleto === $anioActual) {
+                $viajesDelMes++;
+            }
+        }
+    
+        return $viajesDelMes;
+    }
+    
+
     public function pagarPasaje() {
         $this->montoPagado += self::TARIFA;
         $this->saldo -= self::TARIFA;

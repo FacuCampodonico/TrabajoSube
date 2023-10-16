@@ -16,6 +16,9 @@ class ColectivoTest extends TestCase {
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
 
+        // Cargar suficiente saldo en la tarjeta antes de pagar el pasaje
+        $tarjeta->cargarSaldo(Tarjeta::TARIFA);
+
         $boleto = $colectivo->pagarCon($tarjeta, $fecha);
 
         $this->assertInstanceOf(Boleto::class, $boleto);
@@ -95,7 +98,6 @@ class ColectivoTest extends TestCase {
         $colectivo = new Colectivo('Linea 1','normal');
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
-
         $tarjeta->cargarSaldo(150);
 
         $boleto = $colectivo->pagarCon($tarjeta, $fecha);
@@ -103,6 +105,7 @@ class ColectivoTest extends TestCase {
         $this->assertEquals($tarjeta->getSaldo(), 30);
         $this->assertEquals($tarjeta->getMontoPagado(), 120);
     }
+
     public function testGetFecha() {
         // Crea un Boleto con datos de ejemplo
         $boleto = new Boleto(115, '4hk32h4k3h2h4', '24.11.23', 120, 100);
@@ -126,4 +129,9 @@ class ColectivoTest extends TestCase {
         // Comprueba si el saldo restante obtenido es igual al saldo de ejemplo
         $this->assertEquals($boleto->getSaldoRestante(), 100);
     }
+
+
+
+
+
 }
