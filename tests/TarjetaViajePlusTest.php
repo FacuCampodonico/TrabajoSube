@@ -7,7 +7,7 @@ class TarjetaViajePlusTest extends TestCase {
     public function testDosViajesPlus() {
         // Creo una tarjeta nueva (comienza con el saldo en 0, es decir, va a tener dos viajes plus)
         $tarjeta = new Tarjeta();
-        $colecuop = new Colectivo('linea 115');
+        $colecuop = new Colectivo('linea 115','normal');
         $fecha = '1.1.1';
         
         // Pago 2 pasajes con saldo en 0 y verifico que ambos se pagan con el viaje plus

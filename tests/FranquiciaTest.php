@@ -28,7 +28,7 @@ class FranquiciaTest extends TestCase {
     }
 
     public function testMedioBoletoMinimumIntervalBetweenTrips() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','normal');
         $tarjeta = new MedioBoleto();
         $tarjeta->cargarSaldo(600);
         $fecha1 = '1.1.1';
@@ -44,7 +44,7 @@ class FranquiciaTest extends TestCase {
     }
     
     public function testMedioBoletoMaximumTripsPerDay() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','normal');
         $tarjeta = new MedioBoleto();
         $fecha = '1.1.1';
         $tarjeta->cargarSaldo(600);
@@ -60,7 +60,7 @@ class FranquiciaTest extends TestCase {
     }
 
     public function testDosBoletosGratuitosPorDia() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','normal');
         $tarjeta = new BoletoGratuito();
         $fecha = '1.1.1';
         $tarjeta->cargarSaldo(600);
@@ -79,7 +79,7 @@ class FranquiciaTest extends TestCase {
     }
 
     public function testDosBoletosJubiladosPorDia() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','normal');
         $tarjeta = new Jubilado();
         $fecha = '1.1.1';
         $tarjeta->cargarSaldo(600);
