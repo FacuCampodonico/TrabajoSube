@@ -299,6 +299,6 @@ class FranquiciaTest extends TestCase {
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("No se encuentra en el intervalo de tiempo permitido para utilizar la tarjeta.");
-        $tarjeta->pagarPasaje();
+        $colectivo->pagarCon($tarjeta, $fecha);
     } 
 }
