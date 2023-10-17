@@ -73,24 +73,6 @@ class Tarjeta {
     public function realizarViajePlus() {
         $this->saldo -= self::TARIFA;
     }
-
-
-    public function getUltimoViaje() {
-    return $this->ultimoViaje;
-    }
-
-    public function tiempoDesdeUltimoViaje() {
-        if ($this->ultimoViaje === null) {
-            return PHP_INT_MAX; // Devuelve un valor muy grande si no hay un último viaje registrado
-        }
-    
-        $now = new \DateTime();
-        return $now->getTimestamp() - $this->ultimoViaje->getTimestamp();
-    }
-    
-    public function actualizarTiempoUltimoViaje() {
-        $this->ultimoViaje = new \DateTime();
-    }
     
     public function pagarPasajeInterUrbano(){
     
@@ -105,7 +87,7 @@ class Tarjeta {
             $this->saldo -=  184;
             $this->listaViajesDelMes[] = new \DateTime();
             $this->montoPagado +=  184;
-        } elseif (count($this->listaViajesDelMes) >= 29 && count($this->listaViajesDelMes) < 79){
+        } elseif (count($this->listaViajesDelMes) >= 29 && count($this->listaViajesDelMes) <= 79){
             $this->saldo -=  184 * 0.8;
             $this->listaViajesDelMes[] = new \DateTime();
             $this->montoPagado +=  184 * 0.8;

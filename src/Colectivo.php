@@ -17,10 +17,10 @@ class Colectivo {
             // Realizamos el viaje y actualizamos el tiempo del último viaje
             if($this->esInterUrbano == 'si'){
                 $tarjeta->pagarPasajeInterUrbano();
-                $tarjeta->actualizarTiempoUltimoViaje();
+                //$tarjeta->actualizarTiempoUltimoViaje();
             } else{
                 $tarjeta->pagarPasaje(self::TARIFA);
-                $tarjeta->actualizarTiempoUltimoViaje();
+                //$tarjeta->actualizarTiempoUltimoViaje();
             }
 
             return new Boleto($this, $tarjeta, $fecha, self::TARIFA, $tarjeta->getSaldo());

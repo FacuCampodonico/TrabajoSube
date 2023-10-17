@@ -516,4 +516,76 @@ class FranquiciaTest extends TestCase {
         //una vez que ya hizo dos viajes grauitos se le descuenta la tarifa normal del interurbano
         $this->assertEquals($saldo1 - $saldo2, 184);
     }
+
+    public function testTarjetaSegundoViajeDelMesEnInterUrbano(){
+        $tarjeta = new Tarjeta();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que no tire error cuando lo probamos en un dia u hora no adeacuados
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 6:00 PM
+
+        $tarjeta->listaViajesDelMes[] = new \DateTime(); 
+        $tarjeta->listaViajesDelMes[] = new \DateTime();
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+
+        $this->assertEquals($saldo1 - $saldo2, 184);
+    }
+
+    public function testTarjetaViaje30DelMesEnInterUrbano(){
+        $tarjeta = new Tarjeta();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que no tire error cuando lo probamos en un dia u hora no adeacuados
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 6:00 PM
+
+        //hacemos un for para que simule q ya  hizo 30 viajes
+        for ($i = 0; $i < 30 ; $i++) {
+            $tarjeta->listaViajesDelMes[] = new \DateTime();
+        }
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+
+        $valor = round(184 * 0.8, 2);
+
+        $this->assertEquals($valor, round($saldo1 - $saldo2,2));
+    }
+
+    public function testTarjetaViaje80DelMesEnInterUrbano(){
+        $tarjeta = new Tarjeta();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que no tire error cuando lo probamos en un dia u hora no adeacuados
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 6:00 PM
+
+        //hacemos un for para que simule q ya  hizo 30 viajes
+        for ($i = 0; $i < 80 ; $i++) {
+            $tarjeta->listaViajesDelMes[] = new \DateTime();
+        }
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+
+        $valor = round(184 * 0.75, 2);
+
+        $this->assertEquals($valor, round($saldo1 - $saldo2,2));
+    }
+    
 }
