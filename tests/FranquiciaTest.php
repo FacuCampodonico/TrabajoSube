@@ -266,7 +266,7 @@ class FranquiciaTest extends TestCase {
         // hardcodeamos la fecha y hora para que no tire error cuando lo probamos en un dia u hora no adeacuados
         $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
         $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
-        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 6:00 PM
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 4:00 PM
 
         $saldo1 = $tarjeta->getSaldo();
         $colectivo->pagarCon($tarjeta, $fecha);
@@ -295,10 +295,128 @@ class FranquiciaTest extends TestCase {
         // hardcodeamos la fecha y hora para que tire error
         $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
         $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
-        $tarjeta->hoy->setTime(5, 0, 0); // Establecer la hora a las 6:00 PM
+        $tarjeta->hoy->setTime(5, 0, 0); // Establecer la hora a las 4:00 PM
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("No se encuentra en el intervalo de tiempo permitido para utilizar la tarjeta.");
         $colectivo->pagarCon($tarjeta, $fecha);
     } 
+
+    public function testPagaDosPasajesMedioBoletoEnInterUrbanoEnMenosDe5Mins(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que no tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 4:00 PM
+
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Debes esperar al menos 5 minutos antes de realizar otro viaje.");
+        $colectivo->pagarCon($tarjeta, $fecha);
+    }
+
+    public function test3viajesInterUrbanosMedioBoleto(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        //simulamos como que hace 2 viajes llenando la lista
+        for ($i = 0; $i < 2; $i++) {
+            $tarjeta->listaViajes[] = new \DateTime();
+        }
+
+        // hardcodeamos la fecha y hora para que no tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 4:00 PM
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+        //como es el tercer viaje de medio boleto se tiene que hacer la mitad de la tarifa del interurbano
+        $this->assertEquals($saldo1 - $saldo2, 92);
+    }
+
+    public function test4viajesInterUrbanosMedioBoleto(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        //simulamos como que hace 4 viajes llenando la lista
+        for ($i = 0; $i < 4; $i++) {
+            $tarjeta->listaViajes[] = new \DateTime();
+        }
+
+        // hardcodeamos la fecha y hora para que no tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 4:00 PM
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+        //como es el tercer viaje de medio boleto se tiene que hacer la mitad de la tarifa del interurbano
+        $this->assertEquals($saldo1 - $saldo2, 184);
+    }
+
+    public function testViajeInterUrbanosMedioBoletoFueraDeTiempo(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(3, 0, 0); // Establecer la hora a las 3:00 AM
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("No se encuentra en el intervalo de tiempo permitido para utilizar la tarjeta.");
+        $colectivo->pagarCon($tarjeta, $fecha);
+    }
+
+    public function test3viajesLineaNormalMedioBoleto(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','no');
+
+        //simulamos como que hace 2 viajes llenando la lista
+        for ($i = 0; $i < 2; $i++) {
+            $tarjeta->listaViajes[] = new \DateTime();
+        }
+
+        // hardcodeamos la fecha y hora para que no tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 4:00 PM
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+        //como es el tercer viaje de medio boleto se tiene que hacer la mitad de la tarifa del interurbano
+        $this->assertEquals($saldo1 - $saldo2, 60);
+    }
+
+    public function testViajeLineaNormalMedioBoletoFueraDeTiempo(){
+        $tarjeta = new medioBoleto();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','no');
+
+        // hardcodeamos la fecha y hora para que tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(3, 0, 0); // Establecer la hora a las 3:00 AM
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("No se encuentra en el intervalo de tiempo permitido para utilizar la tarjeta.");
+        $colectivo->pagarCon($tarjeta, $fecha);
+    }
 }
