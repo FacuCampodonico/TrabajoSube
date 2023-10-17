@@ -2,7 +2,6 @@
 namespace TrabajoSube;
 
 class BoletoGratuito extends Tarjeta {
-    public $ultimoViaje = 0; // Guarda el timestamp del último viaje
     public $listaViajes = [];
     public $hoy;
 
@@ -35,10 +34,6 @@ class BoletoGratuito extends Tarjeta {
 
     public function realizarViajePlus() {
         $this->saldo -= self::TARIFA;
-    }
-
-    public function tiempoDesdeUltimoViaje() {
-        return time() - $this->ultimoViaje;
     }
 
     public function actualizarTiempoUltimoViaje() {
