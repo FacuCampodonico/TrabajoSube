@@ -36,12 +36,4 @@ class Boleto {
         return $this->saldoRestante;
     }
 
-    public function obtenerInfo() {
-        $descripcion = $this->montoPagado < 0 ? "Abona saldo " . abs($this->montoPagado) : "Total pagado: $" . $this->montoPagado;
-        return "Fecha: " . $this->fecha . "\n" .
-               "Tipo de tarjeta: " . get_class($this->tarjeta) . "\n" .
-               "Colectivo: Línea " . $this->colectivo->getLinea() . ", Empresa: " . $this->colectivo->getEmpresa() . "\n" .
-               $descripcion . "\n" .
-               "Saldo restante: $" . $this->saldoRestante;
-    }
 }
