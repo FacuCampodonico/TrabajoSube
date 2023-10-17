@@ -109,6 +109,10 @@ class FranquiciaTest extends TestCase {
     
         // realizamos dos viajes
         for ($i = 0; $i < 2; $i++) {
+            // hardcodeamos la fecha y hora para que el test no tire error cuando lo probamos en un dia u hora no adeacuados
+            $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+            $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+            $tarjeta->hoy->setTime(9, 0, 0); // Establecer la hora a las 9:00 AM
             $colectivo->pagarCon($tarjeta, $fecha);
             $this->assertEquals($tarjeta->getSaldo(), 600);
             //verificamos que pagando dos el mismo dia no se reste nada del saldo
@@ -253,4 +257,48 @@ class FranquiciaTest extends TestCase {
         $this->assertEquals($saldo1 - $saldo2, 92);
     }
 
+    public function testInterUrbanoJubilado() {
+        $tarjeta = new Jubilado();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que no tire error cuando lo probamos en un dia u hora no adeacuados
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(16, 0, 0); // Establecer la hora a las 6:00 PM
+
+        $saldo1 = $tarjeta->getSaldo();
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+
+        //verificamos que por mas que sea interurbano el se le tiene que restar 0
+        $this->assertEquals($saldo1 - $saldo2, 0);
+
+        //realizamos otro viaje al cual no se le tiene que restar nada
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+        $this->assertEquals($saldo1 - $saldo2, 0);
+
+        //realizamos otro viaje al cual le tiene que restar 184 pesos ya que realizo los dos viajes permitidos por dia
+        $colectivo->pagarCon($tarjeta, $fecha);
+        $saldo2 = $tarjeta->getSaldo();
+        $this->assertEquals($saldo1 - $saldo2, 184);
+    }
+
+    public function testInterUrbanoJubiladoFueraHorario(){
+        $tarjeta = new Jubilado();
+        $tarjeta->saldo = 1000;
+        $fecha = '1.1.1';
+        $colectivo = new Colectivo('Linea 1','si');
+
+        // hardcodeamos la fecha y hora para que tire error
+        $tarjeta->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjeta->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjeta->hoy->setTime(5, 0, 0); // Establecer la hora a las 6:00 PM
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("No se encuentra en el intervalo de tiempo permitido para utilizar la tarjeta.");
+        $tarjeta->pagarPasaje();
+    } 
 }
