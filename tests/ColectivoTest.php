@@ -7,12 +7,12 @@ use PHPUnit\Framework\TestCase;
 class ColectivoTest extends TestCase {
 
     public function testGetLinea() {
-        $cole = new Colectivo(103);
+        $cole = new Colectivo(103,'no');
         $this->assertEquals($cole->getLinea(), 103);
     }
 
     public function testComprarTarjeta() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','no');
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
 
@@ -22,7 +22,7 @@ class ColectivoTest extends TestCase {
     }
 
     public function testPagarWithSufficientBalance() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','no');
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
 
@@ -37,7 +37,7 @@ class ColectivoTest extends TestCase {
     }
 
     public function testPagarWithInsufficientBalance() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','no');
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
 
@@ -92,7 +92,7 @@ class ColectivoTest extends TestCase {
     }
 
     public function testDiscountPass() {
-        $colectivo = new Colectivo('Linea 1');
+        $colectivo = new Colectivo('Linea 1','no');
         $tarjeta = new Tarjeta();
         $fecha = '1.1.1';
 

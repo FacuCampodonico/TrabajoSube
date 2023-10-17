@@ -7,7 +7,7 @@ class TarjetaViajePlusTest extends TestCase {
     public function testDosViajesPlus() {
         // Creo una tarjeta nueva (comienza con el saldo en 0, es decir, va a tener dos viajes plus)
         $tarjeta = new Tarjeta();
-        $colecuop = new Colectivo('linea 115');
+        $colecuop = new Colectivo('linea 115','no');
         $fecha = '1.1.1';
         
         // Pago 2 pasajes con saldo en 0 y verifico que ambos se pagan con el viaje plus
@@ -42,6 +42,12 @@ class TarjetaViajePlusTest extends TestCase {
     public function testJubiladoDiscountsOnViajePlus() {
         $tarjetaRetiree = new Jubilado();
         $tarjetaRetiree->saldo = 1000;
+
+        // hardcodeamos la fecha y hora para que el test no tire error cuando lo probamos en un dia u hora no adeacuados
+        $tarjetaRetiree->hoy = new \DateTime(); // Crear un objeto DateTime
+        $tarjetaRetiree->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $tarjetaRetiree->hoy->setTime(9, 0, 0); // Establecer la hora a las 9:00 AM
+
         $tarjetaRetiree->realizarViajePlus();
         $this->assertEquals($tarjetaRetiree->getSaldo(), 880); // El saldo debe ser 880 después del viaje plus
     }
@@ -49,6 +55,12 @@ class TarjetaViajePlusTest extends TestCase {
     public function testMedioBoletoDiscountsOnViajePlus() {
         $halfTicket = new MedioBoleto();
         $halfTicket->saldo = 1000;
+
+        // hardcodeamos la fecha y hora para que el test no tire error cuando lo probamos en un dia u hora no adeacuados
+        $halfTicket->hoy = new \DateTime(); // Crear un objeto DateTime
+        $halfTicket->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $halfTicket->hoy->setTime(9, 0, 0); // Establecer la hora a las 9:00 AM
+
         $halfTicket->realizarViajePlus();
         $this->assertEquals($halfTicket->getSaldo(), 880); // El saldo debe ser 880 después del viaje plus
     }
@@ -56,6 +68,12 @@ class TarjetaViajePlusTest extends TestCase {
     public function testBoletoGratuitoDiscountsOnViajePlus() {
         $freeTicket = new BoletoGratuito();
         $freeTicket->saldo = 1000;
+
+        // hardcodeamos la fecha y hora para que el test no tire error cuando lo probamos en un dia u hora no adeacuados
+        $freeTicket->hoy = new \DateTime(); // Crear un objeto DateTime
+        $freeTicket->hoy->setISODate(date('Y'), date('W'), 2); // Establecer el día de la semana (lunes)
+        $freeTicket->hoy->setTime(9, 0, 0); // Establecer la hora a las 9:00 AM
+
         $freeTicket->realizarViajePlus();
         $this->assertEquals($freeTicket->getSaldo(), 880); // El saldo debe ser 880 después del viaje plus
     }

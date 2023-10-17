@@ -4,7 +4,7 @@ namespace TrabajoSube;
 class Boleto {
     public $colectivo;
     public $tarjeta;
-    public $fecha;
+    public $fecha; // Fecha y hora del viaje
     public $montoPagado;
     public $saldoRestante;
 
@@ -45,4 +45,3 @@ class Boleto {
                "Saldo restante: $" . $this->saldoRestante;
     }
 }
-?>
